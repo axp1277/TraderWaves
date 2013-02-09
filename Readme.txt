@@ -1,0 +1,1 @@
+This repository contains a suite of Matlab m-files geared towards developing investment/trading models
