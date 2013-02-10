@@ -48,7 +48,7 @@ classdef Indicator
         function [pmo,pmo10] = PriceMomentumOscillator(data,rocPeriod,emaPeriod)
             
             %DecisionPoint inputs: 13,50
-             
+            
             %Calculate Rate of Change.
             roc = roccalc(data,rocPeriod);
             
@@ -56,11 +56,40 @@ classdef Indicator
             pmo = emacalc(roc,emaPeriod);
             
             %Calculate 10 ema on pmo.
-            pmo10 = emacalc(pmo,10);                        
+            pmo10 = emacalc(pmo,10);
             
         end
         
+        %% Calculate Slope.
+        function m = slope(data,period)
+            
+            %Returns the angle in degrees of a linear regression for a moving window periood in data
+            %data.
+            x = 1:numel(data);
+            x = x(:);
+            data = data(:);
+            
+            m = zeros(1,numel(x));
+            for i = period : numel(x);
+                coeff = polyfit(x(i-period+1:i),data(i-period+1:i),1);
+                m(:,i) = atan(coeff(1))*(180/pi);
+            end
+            
+        end
         
+        %% Average True Range. 
+        function [ATR,TR] = averageTrueRange(highPrice,lowPrice,closePrice,period)
+            %Calculates Average True Range and True Range. 
+            
+            % True Range.
+            TR = max([highPrice(2:end) closePrice(1:end-1)],[],2) - min([lowPrice(2:end) closePrice(1:end-1)],[],2);
+            TR = [0;TR];
+            
+            % Average True Range.
+            ATR = Indicator.ExponentialMovingAverage(TR,period);
+
+        end
+                        
     end
     
 end
